@@ -3,53 +3,72 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import Products from './pages/Products';
+import FoodProducts from './pages/FoodProducts';
+import ConstructionProducts from './pages/ConstructionProducts';
 import Entries from './pages/Entries';
 import Exits from './pages/Exits';
 import Stock from './pages/Stock';
 import Reports from './pages/Reports';
+import Users from './pages/Users';
 import Layout from './components/Layout';
+import { User } from './types';
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem('isAuth') === 'true';
+  const [user, setUser] = useState<User | null>(() => {
+    const saved = localStorage.getItem('user');
+    return saved ? JSON.parse(saved) : null;
   });
 
-  const login = () => {
-    setIsAuthenticated(true);
-    localStorage.setItem('isAuth', 'true');
+  const login = (userData: User) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const logout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem('isAuth');
+    setUser(null);
+    localStorage.removeItem('user');
   };
 
-  if (!isAuthenticated) {
+  if (!user) {
     return (
       <Router>
         <Routes>
           <Route path="/login" element={<Login onLogin={login} />} />
+          <Route path="/register" element={<Register />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>
     );
   }
 
+  const isAdmin = user.role === 'admin';
+
   return (
     <Router>
-      <Layout onLogout={logout}>
+      <Layout user={user} onLogout={logout}>
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/products" element={<Products />} />
+          
+          {/* Common Routes */}
           <Route path="/entries" element={<Entries />} />
           <Route path="/exits" element={<Exits />} />
-          <Route path="/stock" element={<Stock />} />
-          <Route path="/reports" element={<Reports />} />
+          
+          {/* Admin Only Routes */}
+          {isAdmin && (
+            <>
+              <Route path="/products/food" element={<FoodProducts />} />
+              <Route path="/products/construction" element={<ConstructionProducts />} />
+              <Route path="/stock" element={<Stock />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/users" element={<Users />} />
+            </>
+          )}
+          
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>

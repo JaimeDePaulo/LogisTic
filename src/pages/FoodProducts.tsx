@@ -1,0 +1,98 @@
+import { useState } from 'react';
+import { Plus, Search, Filter, Edit2, Trash2, MoreVertical, Utensils } from 'lucide-react';
+import { mockProducts } from '../lib/mockData';
+import { cn } from '../lib/utils';
+
+export default function FoodProducts() {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredProducts = mockProducts.filter(p => 
+    p.category === 'Alimentar' && (
+      p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+            <Utensils className="w-6 h-6 text-emerald-600" />
+            Produtos Alimentares
+          </h1>
+          <p className="text-slate-500">Gestão de stock de alimentos e bebidas.</p>
+        </div>
+        <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 shadow-lg shadow-emerald-200 transition-all shrink-0">
+          <Plus className="w-5 h-5" />
+          Novo Alimento
+        </button>
+      </div>
+
+      <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input 
+            type="text" 
+            placeholder="Pesquisar alimentos..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+          />
+        </div>
+        <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-600 flex items-center gap-2 hover:bg-slate-50 transition-colors">
+          <Filter className="w-4 h-4" />
+          Filtros
+        </button>
+      </div>
+
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-slate-50/50">
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nome</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Quantidade</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Unidade</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Validade</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {filteredProducts.map((product) => (
+                <tr key={product.id} className="hover:bg-slate-50/50 transition-colors group">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg font-bold">
+                        {product.name.charAt(0)}
+                      </div>
+                      <span className="text-sm font-semibold text-slate-900">{product.name}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm font-mono text-slate-600">
+                    {product.quantity}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-500">
+                    {product.unit}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-500">
+                    {product.expiryDate || 'N/A'}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button className="p-2 hover:bg-emerald-50 text-emerald-600 rounded-lg transition-colors">
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button className="p-2 hover:bg-red-50 text-red-600 rounded-lg transition-colors">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}

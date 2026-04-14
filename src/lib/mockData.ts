@@ -1,4 +1,9 @@
-import { Product, Entry, Exit } from '../types';
+import { Product, Entry, Exit, User } from '../types';
+
+export const mockUsers: User[] = [
+  { id: 'u1', name: 'Admin Principal', email: 'admin@logistock.com', password: 'admin', role: 'admin', createdAt: '2024-01-01' },
+  { id: 'u2', name: 'Operador João', email: 'joao@logistock.com', password: 'user', role: 'user', createdAt: '2024-02-15' },
+];
 
 export const mockProducts: Product[] = [
   { id: '1', name: 'Arroz Agulha 1kg', category: 'Alimentar', quantity: 150, unit: 'un', expiryDate: '2026-12-31', minStock: 50 },
