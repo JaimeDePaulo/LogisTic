@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, User as FirebaseUser, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc, collection, onSnapshot, query, where, addDoc, updateDoc, deleteDoc, getDocFromServer } from 'firebase/firestore';
 // @ts-ignore
 import firebaseConfig from '../../firebase-applet-config.json';
@@ -67,6 +67,16 @@ export const signInWithGoogle = async () => {
     return result.user;
   } catch (error) {
     console.error("Error signing in with Google", error);
+    throw error;
+  }
+};
+
+export const loginWithEmail = async (email: string, pass: string) => {
+  try {
+    const result = await signInWithEmailAndPassword(auth, email, pass);
+    return result.user;
+  } catch (error) {
+    console.error("Error signing in with Email", error);
     throw error;
   }
 };

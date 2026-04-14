@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, Edit2, Trash2, Utensils, X } from 'lucide-react';
+import { Plus, Search, Filter, Edit2, Trash2, Utensils, X, FileText, Download } from 'lucide-react';
 import { collection, onSnapshot, query, where, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { Product } from '../types';
 import { cn } from '../lib/utils';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 
 export default function FoodProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -32,6 +35,40 @@ export default function FoodProducts() {
 
     return () => unsubscribe();
   }, []);
+
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    doc.text('Lista de Produtos Alimentares', 14, 15);
+    
+    const tableData = products.map(p => [
+      p.name,
+      p.quantity.toString(),
+      p.unit,
+      p.expiryDate || 'N/A',
+      p.minStock.toString()
+    ]);
+
+    (doc as any).autoTable({
+      head: [['Nome', 'Quantidade', 'Unidade', 'Validade', 'Stock Mín.']],
+      body: tableData,
+      startY: 20,
+    });
+
+    doc.save('produtos-alimentares.pdf');
+  };
+
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(products.map(p => ({
+      Nome: p.name,
+      Quantidade: p.quantity,
+      Unidade: p.unit,
+      Validade: p.expiryDate || 'N/A',
+      'Stock Mínimo': p.minStock
+    })));
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Produtos");
+    XLSX.writeFile(workbook, "produtos-alimentares.xlsx");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,17 +120,33 @@ export default function FoodProducts() {
           </h1>
           <p className="text-slate-500">Gestão de stock de alimentos e bebidas.</p>
         </div>
-        <button 
-          onClick={() => {
-            setEditingProduct(null);
-            setFormData({ name: '', quantity: 0, unit: 'un', expiryDate: '', minStock: 10 });
-            setIsModalOpen(true);
-          }}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 shadow-lg shadow-emerald-200 transition-all shrink-0"
-        >
-          <Plus className="w-5 h-5" />
-          Novo Alimento
-        </button>
+        <div className="flex gap-2">
+          <button 
+            onClick={exportToPDF}
+            className="bg-white hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-xl font-semibold border border-slate-200 flex items-center gap-2 transition-all"
+          >
+            <FileText className="w-4 h-4" />
+            PDF
+          </button>
+          <button 
+            onClick={exportToExcel}
+            className="bg-white hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-xl font-semibold border border-slate-200 flex items-center gap-2 transition-all"
+          >
+            <Download className="w-4 h-4" />
+            Excel
+          </button>
+          <button 
+            onClick={() => {
+              setEditingProduct(null);
+              setFormData({ name: '', quantity: 0, unit: 'un', expiryDate: '', minStock: 10 });
+              setIsModalOpen(true);
+            }}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 shadow-lg shadow-emerald-200 transition-all shrink-0"
+          >
+            <Plus className="w-5 h-5" />
+            Novo Alimento
+          </button>
+        </div>
       </div>
 
       <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row gap-4">
