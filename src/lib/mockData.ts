@@ -1,8 +1,8 @@
 import { Product, Entry, Exit, User } from '../types';
 
 export const mockUsers: User[] = [
-  { id: 'u1', name: 'Admin Principal', email: 'admin@logistock.com', password: 'admin', role: 'admin', createdAt: '2024-01-01' },
-  { id: 'u2', name: 'Operador João', email: 'joao@logistock.com', password: 'user', role: 'user', createdAt: '2024-02-15' },
+  { id: 'u1', uid: 'u1', name: 'Admin Principal', email: 'admin@logistock.com', password: 'admin', role: 'admin', createdAt: '2024-01-01' },
+  { id: 'u2', uid: 'u2', name: 'Operador João', email: 'joao@logistock.com', password: 'user', role: 'user', createdAt: '2024-02-15' },
 ];
 
 export const mockProducts: Product[] = [

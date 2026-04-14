@@ -1,0 +1,76 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and permissions",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "user"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "name", "email", "role"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Inventory item",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "category": { "type": "string", "enum": ["Alimentar", "Construção"] },
+        "quantity": { "type": "number" },
+        "unit": { "type": "string" },
+        "expiryDate": { "type": "string" },
+        "minStock": { "type": "number" }
+      },
+      "required": ["name", "category", "quantity", "unit", "minStock"]
+    },
+    "Entry": {
+      "title": "Entry",
+      "description": "Stock entry record",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string" },
+        "quantity": { "type": "number" },
+        "date": { "type": "string" },
+        "supplier": { "type": "string" },
+        "responsible": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["productId", "quantity", "date", "supplier", "responsible"]
+    },
+    "Exit": {
+      "title": "Exit",
+      "description": "Stock exit record",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string" },
+        "quantity": { "type": "number" },
+        "date": { "type": "string" },
+        "destination": { "type": "string" },
+        "responsible": { "type": "string" }
+      },
+      "required": ["productId", "quantity", "date", "destination", "responsible"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Inventory products"
+    },
+    "/entries/{entryId}": {
+      "schema": "Entry",
+      "description": "Stock entries"
+    },
+    "/exits/{exitId}": {
+      "schema": "Exit",
+      "description": "Stock exits"
+    }
+  }
+}
