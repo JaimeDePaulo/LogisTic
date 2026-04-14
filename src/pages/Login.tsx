@@ -12,8 +12,24 @@ export default function Login() {
     setError('');
     try {
       await signInWithGoogle();
-    } catch (err) {
-      setError('Erro ao entrar com Google. Verifique sua conexão.');
+    } catch (err: any) {
+      console.error("Login Error:", err);
+      
+      let message = 'Erro ao entrar com Google. Verifique sua conexão.';
+      
+      if (err.code === 'auth/operation-not-allowed') {
+        message = 'O login com Google não está ativado no Console do Firebase. Por favor, ative-o em Authentication > Sign-in method.';
+      } else if (err.code === 'auth/unauthorized-domain') {
+        message = 'Este domínio não está autorizado no Console do Firebase. Adicione este URL em Authentication > Settings > Authorized domains.';
+      } else if (err.code === 'auth/popup-blocked') {
+        message = 'O popup de login foi bloqueado pelo seu navegador. Por favor, permita popups para este site.';
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        message = 'O login foi cancelado. Por favor, tente novamente.';
+      } else if (err.message) {
+        message = `Erro: ${err.message}`;
+      }
+      
+      setError(message);
       setLoading(false);
     }
   };
